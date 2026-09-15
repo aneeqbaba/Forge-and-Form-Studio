@@ -24,6 +24,37 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /contact:
+    post:
+      operationId: sendContact
+      tags: [contact]
+      summary: Send a Forge & Form contact request
+      description: Sends a contact request from the website to the studio inbox.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContactRequestInput"
+      responses:
+        "200":
+          description: Contact request sent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContactRequestResponse"
+        "400":
+          description: Invalid contact request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "502":
+          description: Email delivery failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 components:
   schemas:
     HealthStatus:
@@ -33,4 +64,36 @@ components:
           type: string
       required:
         - status
+    ContactRequestInput:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 120
+        email:
+          type: string
+          format: email
+        interest:
+          type: string
+          minLength: 1
+          maxLength: 4000
+      required:
+        - name
+        - email
+        - interest
+    ContactRequestResponse:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+        - message
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
 

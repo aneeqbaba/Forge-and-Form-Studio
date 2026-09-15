@@ -281,16 +281,33 @@ function Journal() {
 function Contact() {
   const [sent, setSent] = useState(false);
   const [newsletterSent, setNewsletterSent] = useState(false);
-  const handleContact = (event: FormEvent<HTMLFormElement>) => {
+  const [sending, setSending] = useState(false);
+  const [contactError, setContactError] = useState(false);
+  const handleContact = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
-    const name = String(formData.get('name') ?? '');
-    const email = String(formData.get('email') ?? '');
-    const interest = String(formData.get('interest') ?? '');
-    const subject = encodeURIComponent(`Forge & Form visit request from ${name}`);
-    const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\nWhat brings me in:\n${interest}`);
-    window.location.href = `mailto:aneeqbaba2002@gmail.com?subject=${subject}&body=${body}`;
-    setSent(true);
+    setSending(true);
+    setSent(false);
+    setContactError(false);
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: String(formData.get('name') ?? ''),
+          email: String(formData.get('email') ?? ''),
+          interest: String(formData.get('interest') ?? ''),
+        }),
+      });
+
+      if (!response.ok) throw new Error('Contact request failed');
+      setSent(true);
+    } catch {
+      setContactError(true);
+    } finally {
+      setSending(false);
+    }
   };
   return (
     <>
@@ -310,8 +327,9 @@ function Contact() {
             <div className="field"><label htmlFor="contact-email">Email address</label><input id="contact-email" name="email" type="email" required data-testid="input-contact-email" /></div>
             <div className="field"><label htmlFor="contact-interest">What brings you in?</label><textarea id="contact-interest" name="interest" rows={2} required data-testid="input-contact-interest" /></div>
             <div className="form-foot">
-              <button className="solid-cta" type="submit" data-testid="button-contact-submit"><span>Send a note <ArrowRight size={15} /></span></button>
-              {sent && <span className="form-status" role="status" data-testid="status-contact-success">Your email app is ready. Send the note to finish.</span>}
+              <button className="solid-cta" type="submit" disabled={sending} data-testid="button-contact-submit"><span>{sending ? 'Sending…' : 'Send a note'} {!sending && <ArrowRight size={15} />}</span></button>
+              {sent && <span className="form-status" role="status" data-testid="status-contact-success">Thank you. Your note was sent to the studio.</span>}
+              {contactError && <span className="form-status form-status-error" role="alert" data-testid="status-contact-error">We couldn’t send your note. Please try again.</span>}
             </div>
           </form>
         </div>
