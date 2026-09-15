@@ -272,8 +272,14 @@ function Contact() {
   const [newsletterSent, setNewsletterSent] = useState(false);
   const handleContact = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const name = String(formData.get('name') ?? '');
+    const email = String(formData.get('email') ?? '');
+    const interest = String(formData.get('interest') ?? '');
+    const subject = encodeURIComponent(`Forge & Form visit request from ${name}`);
+    const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\nWhat brings me in:\n${interest}`);
+    window.location.href = `mailto:aneeqbaba2002@gmail.com?subject=${subject}&body=${body}`;
     setSent(true);
-    event.currentTarget.reset();
   };
   return (
     <>
@@ -294,7 +300,7 @@ function Contact() {
             <div className="field"><label htmlFor="contact-interest">What brings you in?</label><textarea id="contact-interest" name="interest" rows={2} required data-testid="input-contact-interest" /></div>
             <div className="form-foot">
               <button className="solid-cta" type="submit" data-testid="button-contact-submit"><span>Send a note <ArrowRight size={15} /></span></button>
-              {sent && <span className="form-status" role="status" data-testid="status-contact-success">Thank you. We’ll be in touch shortly.</span>}
+              {sent && <span className="form-status" role="status" data-testid="status-contact-success">Your email app is ready. Send the note to finish.</span>}
             </div>
           </form>
         </div>
