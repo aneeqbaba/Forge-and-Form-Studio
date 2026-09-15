@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import type { FormEvent } from 'react';
+import type { FormEvent, MouseEvent } from 'react';
 import { ArrowRight, ArrowUpRight, Menu, X } from 'lucide-react';
 
 const navItems = [
@@ -42,22 +42,27 @@ function scrollToId(id: string, closeMenu?: () => void) {
   document.querySelector(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
+function handleAnchorClick(event: MouseEvent<HTMLAnchorElement>, href: string, closeMenu?: () => void) {
+  event.preventDefault();
+  scrollToId(href, closeMenu);
+}
+
 function Header({ menuOpen, setMenuOpen }: { menuOpen: boolean; setMenuOpen: (open: boolean) => void }) {
   return (
     <>
       <header className="header">
-        <a className="wordmark" href="#top" data-testid="link-wordmark" onClick={() => setMenuOpen(false)}>
+        <a className="wordmark" href="#top" data-testid="link-wordmark" onClick={(event) => handleAnchorClick(event, '#top', () => setMenuOpen(false))}>
           <span className="wordmark-mark" aria-hidden="true" />
           <span>FORGE <i className="copper">&amp;</i> FORM</span>
         </a>
         <nav className="nav" aria-label="Main navigation">
           {navItems.map((item) => (
-            <a key={item.href} href={item.href} data-testid={`link-nav-${item.label.toLowerCase()}`}>
+            <a key={item.href} href={item.href} onClick={(event) => handleAnchorClick(event, item.href)} data-testid={`link-nav-${item.label.toLowerCase()}`}>
               {item.label}
             </a>
           ))}
         </nav>
-        <a className="nav-cta" href="#visit" data-testid="link-header-visit"><span>Visit the studio</span></a>
+        <a className="nav-cta" href="#visit" onClick={(event) => handleAnchorClick(event, '#visit')} data-testid="link-header-visit"><span>Visit the studio</span></a>
         <button
           className="menu-toggle"
           aria-label={menuOpen ? 'Close menu' : 'Open menu'}
@@ -75,12 +80,12 @@ function Header({ menuOpen, setMenuOpen }: { menuOpen: boolean; setMenuOpen: (op
             href={item.href}
             data-testid={`link-mobile-${item.label.toLowerCase()}`}
             style={{ transitionDelay: menuOpen ? `${index * 55 + 80}ms` : '0ms' }}
-            onClick={() => setMenuOpen(false)}
+            onClick={(event) => handleAnchorClick(event, item.href, () => setMenuOpen(false))}
           >
             {item.label}
           </a>
         ))}
-        <a href="#visit" data-testid="link-mobile-visit" onClick={() => setMenuOpen(false)}>Visit the studio <ArrowUpRight size={22} strokeWidth={1.2} /></a>
+        <a href="#visit" data-testid="link-mobile-visit" onClick={(event) => handleAnchorClick(event, '#visit', () => setMenuOpen(false))}>Visit the studio <ArrowUpRight size={22} strokeWidth={1.2} /></a>
         <span className="mobile-note">San Francisco · Est. 2018</span>
       </div>
     </>
@@ -91,7 +96,7 @@ function Hero() {
   return (
     <section id="top" className="hero">
       <div className="hero-content">
-        <div className="hero-kicker reveal">A strength and wellness studio / San Francisco</div>
+        <div className="hero-kicker reveal">A strength and wellness studio</div>
         <h1 className="reveal delay-1">Strength is<br /><em>built,</em> not born.</h1>
         <div className="hero-bottom reveal delay-2">
           <p className="hero-dek">A considered approach to training for people who want to be in their bodies for a long time.</p>
@@ -113,11 +118,20 @@ function Philosophy() {
         <div>
           <span className="eyebrow reveal">The philosophy</span>
           <h2 className="intro-title reveal delay-1">More than<br />the mirror.</h2>
+          <div className="intro-index reveal delay-2">
+            <span>01</span>
+            <span>Training for the long game</span>
+          </div>
         </div>
         <div className="intro-copy reveal delay-2">
-          <p>We build strength for the life around it.</p>
-          <p>Forge &amp; Form is a studio for the curious and committed. We pair intelligent programming with patient coaching, in a room designed to remove the noise. No quick fixes. No performance for performance's sake. Just the daily practice of becoming more capable.</p>
-          <a className="inline-link" href="#coaches" data-testid="link-philosophy-coaches">Meet the people behind the practice <span>→</span></a>
+          <p>We build the kind of strength that makes the rest of life feel more possible.</p>
+          <p>Forge &amp; Form is for the curious and committed. Every session pairs intelligent programming with patient coaching, so progress is measured in better movement, steadier attention, and a body you can rely on. No quick fixes. No performance for performance's sake. Just a practice worth returning to.</p>
+          <div className="intro-principles" aria-label="Forge and Form principles">
+            <span>01 / Precision</span>
+            <span>02 / Patience</span>
+            <span>03 / Practice</span>
+          </div>
+          <a className="inline-link" href="#coaches" onClick={(event) => handleAnchorClick(event, '#coaches')} data-testid="link-philosophy-coaches">Meet the people behind the practice <span>→</span></a>
         </div>
       </div>
     </section>
@@ -193,9 +207,9 @@ function Studio() {
 
 function Membership() {
   const tiers = [
-    { no: '01', name: 'Open Floor', copy: 'For independent practice with all the right tools and a little room to think.', price: '$185', suffix: '/ month' },
-    { no: '02', name: 'The Forge', copy: 'Our full practice. Small-group coaching, open floor, and a program built around you.', price: '$295', suffix: '/ month', recommended: true },
-    { no: '03', name: 'Private Form', copy: 'One-to-one attention for a focused block of work, built around your particular goals.', price: '$520', suffix: '/ 4 sessions' },
+    { no: '01', name: 'Open Floor', copy: 'For independent practice with all the right tools and a little room to think.', price: '$185', suffix: '/ month', includes: ['Unlimited floor access', 'Personalized starting plan', 'Weekly coach check-in'] },
+    { no: '02', name: 'The Forge', copy: 'Our full practice. Small-group coaching, open floor, and a program built around you.', price: '$295', suffix: '/ month', recommended: true, includes: ['Small-group coaching', 'Unlimited floor access', 'Monthly programming review'] },
+    { no: '03', name: 'Private Form', copy: 'One-to-one attention for a focused block of work, built around your particular goals.', price: '$520', suffix: '/ 4 sessions', includes: ['Four private sessions', 'Movement assessment', 'A plan built around your life'] },
   ];
   return (
     <section id="membership" className="section section-tint">
@@ -209,8 +223,11 @@ function Membership() {
             <span className="tier-no">{tier.no} / 03</span>
             <h3>{tier.name}</h3>
             <p>{tier.copy}</p>
+            <ul className="tier-includes">
+              {tier.includes.map((item) => <li key={item}>{item}</li>)}
+            </ul>
             <div className="price">{tier.price} <small>{tier.suffix}</small></div>
-            <a className="tier-link" href="#visit" data-testid={`link-membership-${tier.name.toLowerCase().replaceAll(' ', '-')}`}>Start here <ArrowRight size={14} /></a>
+            <a className="tier-link" href="#visit" onClick={(event) => handleAnchorClick(event, '#visit')} data-testid={`link-membership-${tier.name.toLowerCase().replaceAll(' ', '-')}`}>Start here <ArrowRight size={14} /></a>
           </article>
         ))}
       </div>
