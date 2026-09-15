@@ -39,7 +39,18 @@ const journal = [
 
 function scrollToId(id: string, closeMenu?: () => void) {
   closeMenu?.();
-  document.querySelector(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const target = document.querySelector(id);
+  if (!target) return;
+
+  document.documentElement.classList.remove('is-navigating');
+  void document.documentElement.offsetWidth;
+  document.documentElement.classList.add('is-navigating');
+
+  const headerOffset = 24;
+  const targetTop = target.getBoundingClientRect().top + window.scrollY - headerOffset;
+  window.scrollTo({ top: Math.max(0, targetTop), behavior: 'smooth' });
+  window.history.replaceState(null, '', id);
+  window.setTimeout(() => document.documentElement.classList.remove('is-navigating'), 720);
 }
 
 function handleAnchorClick(event: MouseEvent<HTMLAnchorElement>, href: string, closeMenu?: () => void) {
@@ -336,6 +347,7 @@ function Home() {
   }, [menuOpen]);
   return (
     <main className="site">
+      <div className="route-transition" aria-hidden="true" />
       <Header menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
       <Hero />
       <Philosophy />
