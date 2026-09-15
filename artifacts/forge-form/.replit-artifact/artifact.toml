@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Forge & Form"
+description = "A premium single-page website for Forge & Form, a boutique strength-training and wellness studio. The experience introduces the studio, programs, coaches, membership tiers, journal, and contact path through an editorial, architectural visual language."
+version = "1.0.0"
+id = "artifacts/forge-form"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 23123
+
+[services.development]
+run = "pnpm --filter @workspace/forge-form run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/forge-form", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/forge-form/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "23123"
+BASE_PATH = "/"
