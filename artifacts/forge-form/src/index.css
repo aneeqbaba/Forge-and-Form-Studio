@@ -144,6 +144,11 @@ a { color: inherit; text-decoration: none; }
 .program-no { color: #c1552c; font-size: 11px; letter-spacing: .16em; }
 .program h3 { margin: 10px 0 7px; font-family: var(--app-font-serif); font-size: 36px; font-weight: 500; letter-spacing: -.04em; }
 .program p { max-width: 250px; margin: 0; color: rgba(245,242,236,.68); font-size: 12px; line-height: 1.5; }
+#programs.section, #membership.section, #journal.section { padding-block: 104px; }
+#programs .program-header { margin-bottom: 48px; }
+#programs .program { min-height: 400px; }
+#programs .program:nth-child(2) { min-height: 330px; margin-bottom: 52px; }
+#programs .program:nth-child(3) { min-height: 435px; margin-bottom: 18px; }
 
 .coaches-wrap { display: grid; grid-template-columns: .6fr 1.4fr; gap: 9vw; }
 .coaches-intro p { max-width: 270px; margin: 30px 0; color: rgba(245,242,236,.58); font-size: 14px; line-height: 1.65; }
@@ -186,6 +191,12 @@ a { color: inherit; text-decoration: none; }
 .price { font-size: 27px; font-weight: 500; letter-spacing: -.04em; }
 .price small { color: #8a8680; font-size: 11px; letter-spacing: .04em; }
 .tier-link { position: absolute; right: 28px; bottom: 33px; border-bottom: 1px solid #c1552c; padding-bottom: 6px; color: #111110; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+#membership .membership-head { margin-bottom: 45px; }
+#membership .tier { min-height: 390px; padding: 26px 26px 30px; }
+#membership .tier h3 { margin-top: 54px; }
+#membership .tier p { min-height: 56px; margin-bottom: 16px; }
+#membership .tier-includes { margin-bottom: 18px; }
+#membership .tier-link { right: 26px; bottom: 30px; }
 
 .quote { min-height: 610px; display: flex; align-items: center; background: #c1552c; color: #f5f2ec; }
 .quote-inner { width: min(1050px, 100%); }
@@ -205,6 +216,9 @@ a { color: inherit; text-decoration: none; }
 .journal-meta { display: flex; justify-content: space-between; color: #8a8680; font-size: 10px; letter-spacing: .11em; text-transform: uppercase; }
 .journal-card h3 { max-width: 405px; margin: 14px 0 0; font-family: var(--app-font-serif); font-size: 28px; font-weight: 500; letter-spacing: -.04em; line-height: 1.02; }
 .journal-card:not(:first-child) h3 { font-size: 22px; }
+#journal .journal-head { margin-bottom: 42px; }
+#journal .journal-image { height: 245px; margin: 15px 0 18px; }
+#journal .journal-card:first-child .journal-image { height: 335px; }
 
 .contact { display: grid; grid-template-columns: .9fr 1.1fr; gap: 10vw; }
 .contact-copy h2 { max-width: 500px; margin: 27px 0 27px; font-family: var(--app-font-serif); font-size: clamp(46px, 6vw, 83px); font-weight: 500; letter-spacing: -.06em; line-height: .9; }
@@ -260,7 +274,8 @@ a { color: inherit; text-decoration: none; }
   .program-header, .membership-head, .journal-head { display: block; }
   .program-header > .inline-link, .journal-head > .inline-link { margin-top: 25px; }
   .programs { display: flex; overflow-x: auto; gap: 13px; padding-right: 9vw; scroll-snap-type: x mandatory; }
-  .program { flex: 0 0 82vw; min-height: 430px !important; margin: 0 !important; scroll-snap-align: start; }
+  #programs.section, #membership.section, #journal.section { padding-block: 72px; }
+  .program { flex: 0 0 82vw; min-height: 385px !important; margin: 0 !important; scroll-snap-align: start; }
   .coaches { grid-template-columns: 1fr 1.25fr; gap: 12px; }
   .coach:first-child { margin-bottom: 65px; }
   .coach-image, .coach:first-child .coach-image { height: 290px; }
@@ -272,11 +287,11 @@ a { color: inherit; text-decoration: none; }
   .design-note { grid-template-columns: 1fr; gap: 28px; margin-top: 45px; }
   .membership-head p { margin-top: 25px; }
   .tiers { display: flex; overflow-x: auto; border: 0; gap: 12px; padding-bottom: 5px; padding-right: 8vw; }
-  .tier { flex: 0 0 77vw; min-height: 430px; border: 1px solid #bdb6aa !important; }
+  .tier { flex: 0 0 77vw; min-height: 385px; border: 1px solid #bdb6aa !important; }
   .quote { min-height: 520px; }
   .journal-list { display: flex; overflow-x: auto; gap: 15px; padding-right: 8vw; }
   .journal-card, .journal-card:first-child { flex: 0 0 78vw; }
-  .journal-card:first-child .journal-image, .journal-image { height: 275px; }
+  .journal-card:first-child .journal-image, .journal-image { height: 245px; }
   .contact-details { margin-top: 32px; }
   .form-foot { align-items: flex-start; flex-direction: column; }
   .footer-top { grid-template-columns: 1fr 1fr; gap: 44px 20px; }
