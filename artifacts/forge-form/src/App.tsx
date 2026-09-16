@@ -37,20 +37,40 @@ const journal = [
   },
 ];
 
-function scrollToId(id: string, closeMenu?: () => void) {
-  closeMenu?.();
-  const target = document.querySelector(id);
+function getTargetScrollTop(target: HTMLElement) {
+  const header = document.querySelector<HTMLElement>('.header');
+  const headerStyles = header ? window.getComputedStyle(header) : null;
+  const headerIsOverlay = headerStyles?.position === 'fixed' || headerStyles?.position === 'sticky';
+  const headerOffset = headerIsOverlay && header ? header.getBoundingClientRect().height + 16 : 24;
+  return Math.max(0, target.getBoundingClientRect().top + window.scrollY - headerOffset);
+}
+
+function scrollToTarget(targetId: string, behavior: ScrollBehavior) {
+  const target = document.getElementById(targetId);
   if (!target) return;
+  window.scrollTo({ top: getTargetScrollTop(target), behavior });
+}
 
-  document.documentElement.classList.remove('is-navigating');
-  void document.documentElement.offsetWidth;
-  document.documentElement.classList.add('is-navigating');
+function scrollToId(href: string, closeMenu?: () => void) {
+  closeMenu?.();
+  const targetId = href.startsWith('#') ? href.slice(1) : href;
 
-  const headerOffset = 24;
-  const targetTop = target.getBoundingClientRect().top + window.scrollY - headerOffset;
-  window.scrollTo({ top: Math.max(0, targetTop), behavior: 'smooth' });
-  window.history.replaceState(null, '', id);
-  window.setTimeout(() => document.documentElement.classList.remove('is-navigating'), 720);
+  // On mobile, closing the menu updates body overflow in an effect. Waiting
+  // two frames ensures the scroll runs after that lock has been removed.
+  window.requestAnimationFrame(() => {
+    window.requestAnimationFrame(() => {
+      const target = document.getElementById(targetId);
+      if (!target) return;
+
+      document.documentElement.classList.remove('is-navigating');
+      void document.documentElement.offsetWidth;
+      document.documentElement.classList.add('is-navigating');
+
+      scrollToTarget(targetId, 'smooth');
+      window.history.replaceState(null, '', `#${targetId}`);
+      window.setTimeout(() => document.documentElement.classList.remove('is-navigating'), 720);
+    });
+  });
 }
 
 function handleAnchorClick(event: MouseEvent<HTMLAnchorElement>, href: string, closeMenu?: () => void) {
@@ -358,6 +378,22 @@ function Home() {
     }, { threshold: 0.08 });
     document.querySelectorAll('.reveal').forEach((element) => observerRef.current?.observe(element));
     return () => observerRef.current?.disconnect();
+  }, []);
+  useEffect(() => {
+    const initialHash = window.location.hash;
+    if (!initialHash) return;
+
+    let secondFrame = 0;
+    const firstFrame = window.requestAnimationFrame(() => {
+      secondFrame = window.requestAnimationFrame(() => {
+        scrollToTarget(initialHash.slice(1), 'auto');
+      });
+    });
+
+    return () => {
+      window.cancelAnimationFrame(firstFrame);
+      window.cancelAnimationFrame(secondFrame);
+    };
   }, []);
   useEffect(() => {
     document.body.style.overflow = menuOpen ? 'hidden' : '';
