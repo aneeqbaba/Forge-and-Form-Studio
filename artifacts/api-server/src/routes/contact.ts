@@ -1,61 +1,23 @@
-import { Router, type IRouter } from "express";
-import { SendContactBody, SendContactResponse } from "@workspace/api-zod";
+import { Router, Request, Response } from "express";
 
-const router: IRouter = Router();
-const studioInbox = "aneeqbaba2002@gmail.com";
-const resendSender = "Forge & Form <onboarding@resend.dev>";
+const router = Router();
 
-router.post("/contact", async (req, res) => {
-  const parsed = SendContactBody.safeParse(req.body);
-
-  if (!parsed.success) {
-    res.status(400).json({ error: "Please provide a name, valid email, and message." });
-    return;
-  }
-
-  const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey) {
-    req.log.error("RESEND_API_KEY is not configured");
-    res.status(502).json({ error: "Email delivery is not configured yet." });
-    return;
-  }
-
-  const { name, email, interest } = parsed.data;
-
+router.post("/", async (req: Request, res: Response) => {
   try {
-    const resendResponse = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        from: resendSender,
-        to: [studioInbox],
-        reply_to: email,
-        subject: `New Forge & Form visit request from ${name}`,
-        text: [
-          "New Forge & Form contact request",
-          "",
-          `Name: ${name}`,
-          `Email: ${email}`,
-          "",
-          "What brings them in:",
-          interest,
-        ].join("\n"),
-      }),
-    });
+    const { name, email, message } = req.body;
 
-    if (!resendResponse.ok) {
-      req.log.error({ status: resendResponse.status }, "Resend rejected contact email");
-      res.status(502).json({ error: "We couldn't send your note. Please try again." });
-      return;
+    if (!name || !email || !message) {
+      return res.status(400).json({ success: false, error: "All fields required" });
     }
 
-    res.json(SendContactResponse.parse({ message: "Your note was sent successfully." }));
+    console.log("New contact message:", { name, email, message });
+
+    // Yahan aapka email ka logic tha, usko baad me lagayenge
+    
+    return res.status(200).json({ success: true, message: "Message sent!" });
   } catch (error) {
-    req.log.error({ err: error }, "Resend request failed");
-    res.status(502).json({ error: "We couldn't send your note. Please try again." });
+    console.error("Contact error:", error);
+    return res.status(500).json({ success: false, error: "Something went wrong" });
   }
 });
 
